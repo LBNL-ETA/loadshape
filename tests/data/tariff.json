@@ -1,0 +1,237 @@
+{
+  "properties": {
+    "label": {
+      "valueType": "text"
+    },
+    "name": {
+      "valueType": "text"
+    },
+    "startdate": {
+      "valueType": "date"
+    },
+    "enddate": {
+      "valueType": "date"
+    },
+    "utility": {
+      "valueType": "text"
+    },
+    "sector": {
+      "valueType": "text"
+    },
+    "description": {
+      "valueType": "text"
+    },
+    "source": {
+      "valueType": "text"
+    },
+    "sourceparent": {
+      "valueType": "text"
+    },
+    "version": {
+      "valueType": "number"
+    },
+    "usenetmetering": {
+      "valueType": "text"
+    },
+    "peakkwcapacitymin": {
+      "valueType": "number"
+    },
+    "peakkwcapacitymax": {
+      "valueType": "number"
+    },
+    "peakkwcapacityhistory": {
+      "valueType": "number"
+    },
+    "peakkwhusagemin": {
+      "valueType": "number"
+    },
+    "peakkwhusagemax": {
+      "valueType": "number"
+    },
+    "peakkwhusagehistory": {
+      "valueType": "number"
+    },
+    "voltagecategory": {
+      "valueType": "text"
+    },
+    "phasewiring": {
+      "valueType": "text"
+    },
+    "voltageminimum": {
+      "valueType": "number"
+    },
+    "voltagemaximum": {
+      "valueType": "number"
+    },
+    "flatratebuy": {
+      "valueType": "number"
+    },
+    "flatratesell": {
+      "valueType": "number"
+    },
+    "flatratefueladj": {
+      "valueType": "number"
+    },
+    "fixedmonthlycharge": {
+      "valueType": "number"
+    },
+    "basicinformationcomments": {
+      "valueType": "text"
+    },
+    "flatdemandunit": {
+      "valueType": "text"
+    },
+    "demandrateunit": {
+      "valueType": "text"
+    },
+    "flatdemandmonth1": {
+      "valueType": "number"
+    },
+    "flatdemandmonth2": {
+      "valueType": "number"
+    },
+    "flatdemandmonth3": {
+      "valueType": "number"
+    },
+    "flatdemandmonth4": {
+      "valueType": "number"
+    },
+    "flatdemandmonth5": {
+      "valueType": "number"
+    },
+    "flatdemandmonth6": {
+      "valueType": "number"
+    },
+    "flatdemandmonth7": {
+      "valueType": "number"
+    },
+    "flatdemandmonth8": {
+      "valueType": "number"
+    },
+    "flatdemandmonth9": {
+      "valueType": "number"
+    },
+    "flatdemandmonth10": {
+      "valueType": "number"
+    },
+    "flatdemandmonth11": {
+      "valueType": "number"
+    },
+    "flatdemandmonth12": {
+      "valueType": "number"
+    },
+    "demandweekdayschedule": {
+      "valueType": "text"
+    },
+    "demandweekendschedule": {
+      "valueType": "text"
+    },
+    "demandreactivepowercharge": {
+      "valueType": "number"
+    },
+    "demandratchetpercentage": {
+      "valueType": "number"
+    },
+    "demandwindow": {
+      "valueType": "number"
+    },
+    "demandcomments": {
+      "valueType": "text"
+    },
+    "energyrateunit": {
+      "valueType": "text"
+    },
+    "energyweekdayschedule": {
+      "valueType": "text"
+    },
+    "energyweekendschedule": {
+      "valueType": "text"
+    },
+    "energycomments": {
+      "valueType": "text"
+    },
+    "energyratestructure/period4/period": {
+      "valueType": "number"
+    },
+    "energyratestructure/period4/tier1rate": {
+      "valueType": "number"
+    },
+    "energyratestructure/period4/tier1sell": {
+      "valueType": "number"
+    },
+    "energyratestructure/period5/period": {
+      "valueType": "number"
+    },
+    "energyratestructure/period5/tier1rate": {
+      "valueType": "number"
+    },
+    "energyratestructure/period5/tier1sell": {
+      "valueType": "number"
+    },
+    "energyratestructure/period1/period": {
+      "valueType": "number"
+    },
+    "energyratestructure/period1/tier1rate": {
+      "valueType": "number"
+    },
+    "energyratestructure/period1/tier1sell": {
+      "valueType": "number"
+    },
+    "energyratestructure/period2/period": {
+      "valueType": "number"
+    },
+    "energyratestructure/period2/tier1rate": {
+      "valueType": "number"
+    },
+    "energyratestructure/period2/tier1sell": {
+      "valueType": "number"
+    },
+    "energyratestructure/period3/period": {
+      "valueType": "number"
+    },
+    "energyratestructure/period3/tier1rate": {
+      "valueType": "number"
+    },
+    "energyratestructure/period3/tier1sell": {
+      "valueType": "number"
+    }
+  },
+  "items": [
+    {
+      "label": "Data:0998ebe1-c904-4536-a017-f01065408b9e",
+      "name": "A-6",
+      "startdate": "2011-01-01",
+      "utility": "Pacific Gas & Electric Co",
+      "sector": "Commercial",
+      "description": "Customers with a maximum \ndemand of 200 kW or greater for three consecutive months must have an interval data \nmeter that can be read remotely by PG&E and be on this or other applicable time-of-use \nschedule.\n\nCustomers who exceed 499 kW for at least three consecutive months during the most \nrecent 12-month period and must otherwise take service on mandatory Schedule E-19 \nmay elect service under Schedule A-6 under the terms outlined in the Solar Pilot \nProgram section of this rate schedule.\n\nthe monthly charge is based on a single phase service",
+      "source": "http://www.pge.com/tariffs/tm2/pdf/ELEC_SCHEDS_A-6.pdf",
+      "version": 1.5,
+      "usenetmetering": "false",
+      "fixedmonthlycharge": 8.9,
+      "demandrateunit": "kW",
+      "demandweekdayschedule": "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+      "demandweekendschedule": "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+      "demandratchetpercentage": 0,
+      "energyrateunit": "kWh",
+      "energyweekdayschedule": "111111112222222222222211111111112222222222222211111111112222222222222211111111112222222222222211333333334444555555444433333333334444555555444433333333334444555555444433333333334444555555444433333333334444555555444433333333334444555555444433111111112222222222222211111111112222222222222211",
+      "energyweekendschedule": "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333111111111111111111111111111111111111111111111111",
+      "uri": "http://en.openei.org/wiki/Data:0998ebe1-c904-4536-a017-f01065408b9e",
+      "type": "Utility_Rates",
+      "energyratestructure/period4/period": 4,
+      "energyratestructure/period4/tier1rate": 0.23713,
+      "energyratestructure/period4/tier1sell": 0.23713,
+      "energyratestructure/period5/period": 5,
+      "energyratestructure/period5/tier1rate": 0.48657,
+      "energyratestructure/period5/tier1sell": 0.48657,
+      "energyratestructure/period1/period": 1,
+      "energyratestructure/period1/tier1rate": 0.12768,
+      "energyratestructure/period1/tier1sell": 0.12768,
+      "energyratestructure/period2/period": 2,
+      "energyratestructure/period2/tier1rate": 0.15534,
+      "energyratestructure/period2/tier1sell": 0.15534,
+      "energyratestructure/period3/period": 3,
+      "energyratestructure/period3/tier1rate": 0.13768,
+      "energyratestructure/period3/tier1sell": 0.13768
+    }
+  ]
+}

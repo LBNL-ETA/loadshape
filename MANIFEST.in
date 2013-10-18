@@ -1,0 +1,2 @@
+include loadshape/r/*.R
+include tests/data/*.csv
