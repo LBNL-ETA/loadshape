@@ -30,8 +30,8 @@ my_load_shape = Loadshape(load_data=LOAD_DATA, temp_data=TEMP_DATA,
 						  temp_units="F", sq_ft=BUILDING_SQ_FT)
 
 # ----- add exclusions as necessary ----- #
-my_load_shape.add_exclusion("2013-09-23 00:14:00", "2013-09-24 00:16:00")
-my_load_shape.add_exclusion("2013-09-27 00:14:00", "2013-09-28 00:16:15")
+my_load_shape.add_exclusion("2013-09-23 14:00:00", "2013-09-24 16:00:00")
+my_load_shape.add_exclusion("2013-09-27 14:00:00", "2013-09-28 16:15:00")
 my_load_shape.add_named_exclusion("US_HOLIDAYS")
 
 # ----- generate the appropriate baseline ----- #

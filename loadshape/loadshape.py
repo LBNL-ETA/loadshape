@@ -153,12 +153,12 @@ class Loadshape(object):
         # ----- run script ----- #
         self._run_script(cmd)
 
-        # print "TIMES:"
+        # print "OUTPUT TIMES:"
         # command = "cat %s" % output_times_tmp.name
         # p = Popen(command, shell=True)
         # stdout, stderr = p.communicate()
 
-        # print "DIFF"
+        # print "OUTPUT DIFF"
         # command = "cat %s" % output_diff_tmp.name
         # p = Popen(command, shell=True)
         # stdout, stderr = p.communicate()
