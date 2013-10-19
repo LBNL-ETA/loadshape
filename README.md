@@ -22,14 +22,6 @@ Wiki
 ----
 Please take a look a the [Wiki](https://bitbucket.org/berkeleylab/eetd-loadshape/wiki) for installation instructions and more detailed usage information.
 
-Future Development
-----
-
-  + add proper R bindings instead of shelling out to the R scripts
-  + more sophisticated named exclusion periods
-  + more robust timezone handling
-  + move series diff functionality from R to python
-
 Contribution
 ----
 Contributions are welcome and encouraged. If you find a bug, please file it. If you would like to see a feature added, please request it. If you would like to contribute code, please fork and submit a pull request.
