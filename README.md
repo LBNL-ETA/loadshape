@@ -3,7 +3,8 @@ Tools for analyzing electric load shapes.
 
 Generating baselines for electric loads can be tricky, this module makes it easy.
 
-```python  
+```
+#!python
 from loadshape import Loadshape
 
 # electric load data - values are expected to be power (kW)
