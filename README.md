@@ -84,29 +84,29 @@ temp_data = [ ("2013-08-01 00:00:00", 54.23),
               ...,
               ("2013-09-26 23:45:00", 58.44) ]
 
-my_baseline = Baseline(load_data, temp_data, temp_units="F")
+my_loadshape = Loadshape(load_data, temp_data, temp_units="F")
 ```
 Note the temp_units argument. Temperature data that is passed in is assumed to be in Farenheit unless otherwise stated.
 
 Baseline Generator
 ----
-The Baseline object's generate method compiles the input data, passes the data to the R script, and then reads in the result. The generate method will return a list of tuples containing the time-series baseline data.
+The Loadshape object's baseline method compiles the input data, passes the data to the R script, and then reads in the result. The baseline method will return a Series object containing the baseline data. The data method on the Series object is the preferred method for accessing the list of tuples containing the time-series baseline data.
 
 ```python
->>> my_baseline_data = my_baseline.generate()
->>> my_baseline_data
+>>> my_baseline = my_loadshape.baseline()
+>>> my_baseline.data()
 [(1375340400, 5.1), (1375341300, 5.1), (1375342200, 5.26), ..., (1380264300, 4.9)]
 ```
 
 Prediction Periods
 ----
 
-By default, the Baseline object's generate method will return a baseline for all of the input load data. To calculate the Baseline for a specific period, just pass in some additional arguments to the generate method:
+By default, the Loadshape object's baseline method will return a baseline for all of the input load data. To calculate the baseline for a specific period, just pass in some additional arguments to the baseline method:
 ```python
 prediction_start = "2013-09-26 00:00:00"
 prediction_end = "2013-09-26 23:45:00"
 
-my_baseline_data = my_baseline.generate(prediction_start, prediction_end, step_size=900)
+my_baseline = my_loadshape.baseline(prediction_start, prediction_end, step_size=900)
 ```
 The step size argument above is optional, the default is 900 (seconds). Also, note that the prediction_start and prediction_end do not need to be within the date range of your input data. The module may be used to generate forecasted baselines.
 
@@ -140,15 +140,15 @@ forecast_temp_data = [ ("2013-09-27 00:00:00", 52.15),
                        ...,
                        ("2013-09-27 23:45:00", 60.31) ]
 
-my_baseline = Baseline(load_data, temp_data, forecast_temp_data)
-my_baseline.generate("2013-09-27 00:00:00", "2013-09-27 23:45:00")
+my_loadshape = Loadshape(load_data, temp_data, forecast_temp_data)
+my_loadshape.baseline("2013-09-27 00:00:00", "2013-09-27 23:45:00")
 ```
 
 CSV Inputs
 ----
 For your convenience, instead of passing your raw data in as Lists of Tuples, you can pass in references to CSV files:
 ```python
-my_baseline = Baseline("path/to/load_data.csv", "path/to/temperature_data.csv")
+my_loadshape = Loadshape("path/to/load_data.csv", "path/to/temperature_data.csv")
 ```
 
 CSVs should have timestamps formatted in one of the following ways:  
@@ -183,8 +183,8 @@ Exclusion Periods
 ----
 If you know that parts of your load data are anomalous for some reason, registering exclusion periods will omit these periods from the baseline calculation so that your baseline load shape will not be affected by them.  
 ```python
-my_baseline.add_exclusion(first_exclusion_start, first_exclusion_end)
-my_baseline.add_exclusion(second_exclusion_start, second_exclusion_end)
+my_loadshape.add_exclusion(first_exclusion_start, first_exclusion_end)
+my_loadshape.add_exclusion(second_exclusion_start, second_exclusion_end)
 ```
 For example, if you have been testing some different energy management strategies and you want to use this baseline to calculate energy savings from a particular strategy, then you'll want to exclude all of the periods during which strategies were being tested, and only include periods that you consider to be "normal" operation.
 
@@ -192,31 +192,39 @@ Timezone
 ----
 It's important that you specify what timezones your timestamps refer to. If no timezone is specified, then the module will assume that you are using the timezone of your OS, but this isn't necessarily a great assumption. Specify your timezone using the appropriate [timezone name](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 ```python
-my_baseline = Baseline(load_data, timezone="America/Los_Angeles")
+my_loadshape = Loadshape(load_data, timezone="America/Los_Angeles")
 ```
 
 Modeling Interval
 ----
-The modeling interval determines the resolution of the model that is used to make predictions. Higher resolution models will run more slowly. By default, the modeling interval is set to 900 seconds. It can be passed in when you instantiate your Baseline object:
+The modeling interval determines the resolution of the model that is used to make predictions. Higher resolution models will run more slowly. By default, the modeling interval is set to 900 seconds. It can be passed in when you instantiate your Loadshape object:
 ```python
-my_baseline = Baseline(load_data, modeling_interval=300)
+my_baseline = my_loadshape.baseline(modeling_interval=300)
 ```
 
 Weighting
 ----
-A "weighting_days" argument allows the model to be biased toward more (or less) recent data. The default value for this is 14 days, meaning the most recent 14 days of training data will be weighted more heavily than data that is older than 14 days. To configure the weighting differently, just pass in an argument when you instantiate your Baseline object:
+A "weighting_days" argument allows the model to be biased toward more (or less) recent data. The default value for this is 14 days, meaning the most recent 14 days of training data will be weighted more heavily than data that is older than 14 days. To configure the weighting differently, just pass in an argument when you instantiate your Loadshape object:
 ```python
-my_baseline = Baseline(load_data, weighting_days=30)
+my_baseline = my_loadshape.baseline(weighting_days=30)
 ```
 
 Goodness of Fit Statistics
 ----
 Once your baseline has been generated, some goodness of fit statistics will be available in the form of a dictionary:
 ```python
->>>my_baseline.generate()
->>>my_baseline.error_stats
-{'MAPE_INTERVAL': 12.858, 'CORR_INTERVAL_DAYTIME': 0.88, 'RMSE_INTERVAL_DAYTIME': 2.421, 'MAPE_HOUR': 11.343, 'RMSE_INTERVAL': 1.723, 'RMSE_HOUR': 1.553, 'MAPE_INTERVAL_DAYTIME': 19.576, 'CORR_INTERVAL': 0.908, 'CORR_HOUR': 0.92}
+>>>my_loadshape.baseline()
+>>>my_loadshape.error_stats
+{'rmse_interval': 1.723, 'corr_interval_daytime': 0.88, 'rmse_interval_daytime': 2.421, 'mape_hour': 11.343, 'mape_interval': 12.858, 'rmse_hour': 1.553, 'mape_interval_daytime': 19.576, 'corr_interval': 0.908, 'corr_hour': 0.92}
 ```
+
+Future Development
+----
+
+  + add proper R bindings instead of shelling out to the R scripts
+  + more sophisticated named exclusion periods
+  + more robust timezone handling
+  + move series diff functionality from R to python
 
 Contribution
 ----
