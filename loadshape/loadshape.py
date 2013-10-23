@@ -237,11 +237,11 @@ class Loadshape(object):
 
         return True
 
-    def actual_data(self, start_at, end_at):
-        return self.training_load_series.data(start_at, end_at)
+    def actual_data(self, start_at, end_at, exclude=False):
+        return self.training_load_series.data(start_at, end_at, exclude=exclude)
 
-    def baseline_data(self, start_at, end_at):
-        return self.baseline_series.data(start_at, end_at)
+    def baseline_data(self, start_at, end_at, exclude=False):
+        return self.baseline_series.data(start_at, end_at, exclude=exclude)
 
     def add_exclusion(self, start_at, end_at):
         """proxy add_exclusion to series"""

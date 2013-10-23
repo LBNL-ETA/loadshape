@@ -86,17 +86,17 @@ readInputFiles = function(inLoadFile,inTemperatureFile=NULL,
 	# the timescale at which the baseline is being fit (typically will be something
 	# like 15 minutes or an hour). We start by aggregating to a timescale finer than
 	# intervalMinutes but not by a lot. 
-	# If for example intervalMinutes=15, and we have 20s data, we aggregate to 
-	# 7.5-minute chunks to avoid carrying around tens or hundreds of times more 
-	# data than needed.
-	aggregateMinutes = intervalMinutes/2
+	# If for example intervalMinutes=15, we aggregate to 5-minute chunks. 
+	# If the original data are at, say, 20s, then this way we avoid carrying 
+	# around tens or hundreds of times more data than needed.
+	aggregateMinutes = intervalMinutes/3
 	t0 = min(loadTime,na.rm=T)
 	tLoadMinutesSinceStart = difftime(loadTime,t0,units="mins") 
 	
-	# If the time period between measurements is less than intervalMinutes/2, then
+	# If the time period between measurements is less than intervalMinutes/3, then
 	# we want to accumulate multiple measurements into our time intervals: two or more
 	# measurements get the same value of intervalLoadSinceStart. But if the
-	# time period between measurements is already longer than intervalMinutes/2, then just
+	# time period between measurements is already longer than intervalMinutes/3, then just
 	# use the measurements as they are; each measurement gets its own intervalLoadSinceStart. 
 	intervalLoadSinceStart = 1+floor(tLoadMinutesSinceStart/aggregateMinutes)
 	dataLoadAggregated = aggregate(dataLoad,by=list(intervalLoadSinceStart),mean,
@@ -155,10 +155,11 @@ readInputFiles = function(inLoadFile,inTemperatureFile=NULL,
 			temperaturePredDat=temperaturePredDat[iok,]
 			predTempVec = temperaturePredDat[,2]	
 			predTempTime = getTime(temperaturePredDat[,1])	
+			predTempTimeNum = as.numeric(predTempTime)
 		
-			predTempVec = approx(predTempTime,predTempVec,predTimeNum,rule=1)$y
+			predTempVec = approx(predTempTimeNum,predTempVec,predTimeNum,rule=1)$y
 		}	
-		if (sum(is.na(predTempVec))==0 ) {
+		if (sum(is.na(predTempVec)) > 0 ) {
 			if (verbose > 1) {
 				doTemperatureModel=F
 				stop("Error: prediction temperature data don't span prediction time range.")
@@ -180,6 +181,7 @@ readInputFiles = function(inLoadFile,inTemperatureFile=NULL,
 			tempVec = tempVec[-abad]
 		}
 	}
+
 	
 	Out = NULL
 	Out$dataTime = dataTime
