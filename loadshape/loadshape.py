@@ -157,9 +157,9 @@ class Loadshape(object):
         cmd += " --outputTimestampFile=%s"  % output_times_tmp.name
         cmd += " --outputFile=%s"           % output_tmp.name
 
-        # if len(self.tariff.dr_periods) > 0:
-        #     dr_periods_tmp = self.tariff.write_dr_periods_to_tempfile()
-        #     cmd += " --demandResponseFile=%s" % dr_periods_tmp.name
+        if len(self.tariff.dr_periods) > 0:
+            dr_periods_tmp = self.tariff.write_dr_periods_to_tempfile()
+            cmd += " --demandResponseFile=%s" % dr_periods_tmp.name
 
         self._run_script(cmd)
         

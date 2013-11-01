@@ -10,25 +10,25 @@ class TestTariff(unittest.TestCase):
         return path.join(test_dir, 'data', 'test_tariff.json')
 
     def test_read_tariff_file(self):
-        t = Tariff()
+        t = Tariff(timezone='America/Los_Angeles')
         t.read_tariff_file(tariff_file=self.get_test_tariff())
         assert t.tariff_file != None
         assert t.tariff_json != None
 
     def test_parse_rate_structure(self):
-        t = Tariff()
+        t = Tariff(timezone='America/Los_Angeles')
         t.read_tariff_file(tariff_file=self.get_test_tariff())
         t.parse_rate_structure()
         assert t.rate_structure != None
     
     def test_parse_rate_schedule(self):
-        t = Tariff()
+        t = Tariff(timezone='America/Los_Angeles')
         t.read_tariff_file(tariff_file=self.get_test_tariff())
         t.parse_rate_schedule()
         assert t.rate_schedule != None
 
     def test_init(self):
-        t = Tariff(tariff_file=self.get_test_tariff())
+        t = Tariff(tariff_file=self.get_test_tariff(), timezone='America/Los_Angeles')
         assert t.tariff_file != None
         assert t.tariff_json != None
         assert t.rate_structure != None
