@@ -1,7 +1,7 @@
 import unittest
 
 from os import path
-from loadshape import Loadshape, Series
+from loadshape import Loadshape, Series, Tariff
 
 class TestLoadshape(unittest.TestCase):
 
@@ -12,6 +12,10 @@ class TestLoadshape(unittest.TestCase):
     def get_temp_data_filepath(self):
         test_dir = path.dirname(path.abspath(__file__))
         return path.join(test_dir, 'data', 'test_temp_small.csv')
+
+    def get_test_tariff(self):
+        test_dir = path.dirname(path.abspath(__file__))
+        return path.join(test_dir, 'data', 'test_tariff.json')
     
     def test_baseline_without_temp(self):
         b = Loadshape(self.get_kw_data_filepath(),
@@ -46,6 +50,18 @@ class TestLoadshape(unittest.TestCase):
         assert kw_base.data() == b_data[1:]
         assert cumulative_kwh_base.data() == expected_cumulative_kwh_base
 
+    def test_cost(self):
+        l_data      = [(1379487600, 5.0), (1379488500, 5.0), (1379489400, 5.0), (1379490300, 5.0), (1379491200, 5.0)]
+        cost        = [(1379487600, 0.0), (1379488500, 0.17), (1379489400, 0.17), (1379490300, 0.17), (1379491200, 0.17)]
+        cumulative_cost = [(1379487600, 0.0), (1379488500, 0.17), (1379489400, 0.34), (1379490300, 0.52), (1379491200, 0.69)]
+
+        tariff = Tariff(tariff_file=self.get_test_tariff(), timezone='America/Los_Angeles')
+        ls = Loadshape(l_data, timezone='America/Los_Angeles', log_level=30, tariff=tariff)
+        cost_out, cumulative_cost_out = ls.cost()
+
+        assert cost_out.data() == cost
+        assert cumulative_cost_out.data() == cumulative_cost
+
     def test_one_step_output_time_series_generator(self):
         start_at = 1379487600
         end_at = 1379488500
@@ -64,7 +80,6 @@ class TestLoadshape(unittest.TestCase):
         assert s.start_at() == start_at
         assert s.end_at() == end_at
 
-        
 def main():
     unittest.main()
 

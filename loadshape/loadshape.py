@@ -15,13 +15,14 @@ import logging
 
 from os import path
 from series import Series
-from subprocess import Popen
+from tariff import Tariff
+from subprocess import Popen, PIPE
 
 class Loadshape(object):
     
     def __init__(self, load_data, temp_data=None, forecast_temp_data=None,
                  timezone=None, temp_units='F', sq_ft=None,
-                 tariff_schedule=None, log_level=logging.INFO):
+                 tariff=None, log_level=logging.INFO):
         """load_data, temp_data, and forecast_temp_data may be:
                 - List of Tuples containing timestamps and values
                 - filename of a csv containing timestamps and values
@@ -36,11 +37,14 @@ class Loadshape(object):
         self.model_dir  = path.join(path.dirname(path.abspath(__file__)), 'r')
         self.temp_units = temp_units
         self.sq_ft      = sq_ft
+        self.tariff     = tariff
 
         self.training_load_series           = self._get_series(load_data)
         self.training_temperature_series    = self._get_series(temp_data)
         self.forecast_temperature_series    = self._get_series(forecast_temp_data)
-        self.tariff_schedule                = tariff_schedule
+        
+        self._stderr = None
+        self._stdout = None
 
         self._reset_derivative_data()
 
@@ -114,16 +118,66 @@ class Loadshape(object):
         self.error_stats = self._read_error_stats(error_stats_tmp.name)
         
         return self.baseline_series
+
+    def cost(self, load_data=None, start_at=None, end_at=None, step_count=None):
+        """calculate the cost of energy based on the provided tariff
+
+        R script produces one output file:
+        timestamp, previous-interval-cost, cumulative-previous-interval-cost
+
+        [tariff.R command]
+        ./tariff.R
+            --loadFile=LOAD_FILE
+            --tariffFile=TARIFF_FILE
+            --outputTimestampFile=OUTPUT_TIMES_FILE
+            --demandResponseFile=DEMAND_RESPONSE_DATES
+            --outputFile=OUTPUT_FILE
+        """
+        if load_data == None: load_data = self.training_load_series
+        
+        if not isinstance(load_data, Series):
+            raise Exception("load_data argument must be a Series object")
+        if not isinstance(self.tariff, Tariff):
+            raise Exception("cannot calculate cost - no tariff provided")
+
+        output_times = self._build_output_time_series(start_at, end_at,
+                                                      step_size=900,
+                                                      step_count=step_count)
+
+        # ----- write temporary files ----- #
+        load_tmp            = load_data.write_to_tempfile(exclude=False)
+        tariff_tmp          = self.tariff.write_tariff_to_tempfile()
+        output_times_tmp    = output_times.write_to_tempfile()
+        output_tmp          = tempfile.NamedTemporaryFile()
+
+        # ----- build command ----- #
+        cmd = path.join(self.model_dir, 'tariff.R')
+        cmd += " --loadFile=%s"             % load_tmp.name
+        cmd += " --tariffFile=%s"           % tariff_tmp.name
+        cmd += " --outputTimestampFile=%s"  % output_times_tmp.name
+        cmd += " --outputFile=%s"           % output_tmp.name
+
+        # if len(self.tariff.dr_periods) > 0:
+        #     dr_periods_tmp = self.tariff.write_dr_periods_to_tempfile()
+        #     cmd += " --demandResponseFile=%s" % dr_periods_tmp.name
+
+        self._run_script(cmd)
+        
+        # ----- process results ----- #
+        cost_series             = Series(output_tmp.name, self.timezone, data_column=1)
+        cumulative_cost_series  = Series(output_tmp.name, self.timezone, data_column=2)
+
+        return cost_series, cumulative_cost_series
             
     def diff(self, start_at=None, end_at=None, step_size=900, step_count=None):
         """calculate the difference between baseline and actual
 
-        two output files: one containing:
-        diff:       timestamp,  kw_diff,    cumulative_kwh_diff
-        baseline:   timestamp,  kw_base,    cumulative_kwh_base
+        R script produces two output files:
+        (1) diff:       timestamp,  kw_diff,    cumulative_kwh_diff
+        (2) baseline:   timestamp,  kw_base,    cumulative_kwh_base
 
-        [series_diff.R command]
-        ./series_diff.R
+        [diff.R command]
+        ./diff.R
             --loadFile=LOAD_FILE
             --baselineFile=BASELINE_LOAD_FILE
             --outputTimesFile=OUTPUT_TIMES_FILE
@@ -153,16 +207,6 @@ class Loadshape(object):
         # ----- run script ----- #
         self._run_script(cmd)
 
-        # print "OUTPUT TIMES:"
-        # command = "cat %s" % output_times_tmp.name
-        # p = Popen(command, shell=True)
-        # stdout, stderr = p.communicate()
-
-        # print "OUTPUT DIFF"
-        # command = "cat %s" % output_diff_tmp.name
-        # p = Popen(command, shell=True)
-        # stdout, stderr = p.communicate()
-
         # ----- process results ----- #
         kw_diff         = Series(output_diff_tmp.name, self.timezone, data_column=1)
         kw_base         = Series(output_base_tmp.name, self.timezone, data_column=1)
@@ -179,8 +223,8 @@ class Loadshape(object):
             - avg_percent_kw_shed       (average kW diff / average kW baseline)
             - kwh_reduction             (cumulative delta kWh)
             - percent_kwh_reduction     (cumulative delta kWh / cumulative kWh baseline)
-            - TODO: total_savings ($)
-            - TODO: total_percent_savings ($)
+            - total_savings ($)
+            - total_percent_savings ($)
             - avg_w_sq_ft_shed          (average kW shed * 1000 / sq_ft)
         """
         # get diff values for period by diffing over a single interval
@@ -199,16 +243,27 @@ class Loadshape(object):
         kwh_base                    = cumulative_kwh_base_series.values()[-1]
         ep["percent_kwh_reduction"] = (ep["kwh_reduction"] / kwh_base) * 100
 
+        # add in W per square feet if square footage was provided
         if self.sq_ft:
             ep["avg_w_sq_ft_shed"]  = (ep["avg_kw_shed"] * 1000) / self.sq_ft
 
-        # if self.tariff_schedule != None:
-        #     base_cost_series, load_cost_series = self.cost(start_at, end_at)
-        #     total_base_cost = base_cost_series.sum()
-        #     total_load_cost = load_cost_series.sum()
+        # calculate $ savings if tariff provided
+        if self.tariff != None:
+            load_cost, load_cumulative_cost = self.cost(load_data=self.training_load_series,
+                                                        start_at=start_at,
+                                                        end_at=end_at,
+                                                        step_count=1)
 
-        #     ep["total_savings"] = total_base_cost - total_load_cost
-        #     ep["total_percent_savings"] = ep["total_savings"] / total_base_cost
+            base_cost, base_cumulative_cost = self.cost(load_data=self.baseline_series,
+                                                        start_at=start_at,
+                                                        end_at=end_at,
+                                                        step_count=1)
+
+            total_load_cost = load_cumulative_cost.values()[-1]
+            total_base_cost = base_cumulative_cost.values()[-1]
+
+            ep["total_savings"] = total_base_cost - total_load_cost
+            ep["total_percent_savings"] = (ep["total_savings"] / total_base_cost) * 100
 
         # round values to something reasonable
         for key, val in ep.iteritems():
@@ -224,16 +279,24 @@ class Loadshape(object):
 
         diff_data = self.diff(start_at, end_at, step_size)
         cumulative_kwh_diff_series = diff_data[2]
-        return cumulative_kwh_diff_series
+        return cumulative_kwh_diff_series    
 
     def _run_script(self, command):
         self.logger.info("Running R script...")
 
-        p = Popen(command, shell=True)
+        p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate()
 
-        if stdout: self.logger.error("stdout: %s" % stdout)
-        if stdout: self.logger.error("stderr: %s" % stderr)
+        self._stdout = stdout
+        self._stderr = stderr
+
+        if stderr:
+            self.logger.error(" --- R script error: --- ")
+            for l in stderr.splitlines(): print " --> %s" % l
+
+        if stdout:
+            self.logger.info(" --- R script info: --- ")
+            for l in stdout.splitlines(): print " --> %s" % l
 
         return True
 
@@ -254,6 +317,10 @@ class Loadshape(object):
     def clear_exclusions(self):
         """proxy clear_exclusion to series"""
         self.training_load_series.clear_exclusions()
+
+    def set_tariff(self, tariff):
+        """add or replace tariff"""
+        self.tariff = tariff
 
     def _get_series(self, data):
         """returns a series built from the data arg

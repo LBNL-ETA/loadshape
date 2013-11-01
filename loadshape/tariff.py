@@ -12,19 +12,40 @@ import csv
 import json
 import utils
 import tempfile
+import logging
 
 class Tariff(object):
-    def __init__(self, tariff_file):
+
+    def __init__(self, tariff_file=None, timezone=None, log_level=logging.INFO):
         """load_data, temp_data, and forecast_temp_data may be:
                 - List of Tuples containing timestamps and values
                 - filename of a csv containing timestamps and values
                 - Series object
         """
-        self.tariff_file = open(tariff_file)
-        self.tariff_json = json.load(self.tariff_file)['items'][0]
+        logging.basicConfig(level=log_level)
+        self.logger = logging.getLogger(__name__)
 
+        if timezone == None: self.logger.warn("Assuming timezone is OS default")
+        self.timezone           = utils.get_timezone(timezone)
+
+        self.tariff_file        = None
+        self.tariff_json        = None
+        self.rate_structure     = None
+        self.rate_schedule      = None
+        self.dr_periods          = []
+
+        if tariff_file != None: self.parse(tariff_file)
+        
+    def parse(self, tariff_file):
+        """read tariff file / parse data"""
+        self.read_tariff_file(tariff_file)
         self.parse_rate_structure()
         self.parse_rate_schedule()
+
+    def read_tariff_file(self, tariff_file):
+        """read tariff file, parse json, save to instnace variable"""
+        self.tariff_file = open(tariff_file)
+        self.tariff_json = json.load(self.tariff_file)['items'][0]
 
     def parse_rate_structure(self):
         rate_structure = {}
@@ -69,8 +90,14 @@ class Tariff(object):
     def dr_day_schedule(self):
         return self.rate_schedule.get('dr', None)
 
+    def add_dr_period(self, start_at, end_at):
+        period_start = utils.read_timestamp(start_at, self.timezone)
+        period_end = utils.read_timestamp(end_at, self.timezone)
+        self.dr_periods.append( (period_start, period_end) )
+        return True
+
     # --- file writers --- #            
-    def write_to_file(self, file_obj=None, file_name='tariff.csv'):
+    def write_tariff_to_file(self, file_obj=None, file_name='tariff.csv'):
         if file_obj == None: file_obj = open(file_name, 'w')
 
         # write price structure
@@ -95,6 +122,21 @@ class Tariff(object):
         file_obj.flush()
         return file_obj
 
-    def write_to_tempfile(self):
+    def write_tariff_to_tempfile(self):
         tmp_file = tempfile.NamedTemporaryFile()
-        return self.write_to_file(tmp_file)
+        return self.write_tariff_to_file(tmp_file)
+
+    def write_dr_periods_to_file(self, file_obj=None, file_name='dr_periods.csv'):
+        if file_obj == None: file_obj = open(file_name, 'w')
+
+        for period in self.dr_periods:
+            start_at = utils.int_to_datetime(period[0], self.timezone).strftime("%Y-%m-%d %H:%M:%S")
+            end_at = utils.int_to_datetime(period[1], self.timezone).strftime("%Y-%m-%d %H:%M:%S")
+            file_obj.write("%s,%s\n" % (start_at, end_at))
+
+        file_obj.flush()
+        return file_obj
+
+    def write_dr_periods_to_tempfile(self):
+        tmp_file = tempfile.NamedTemporaryFile()
+        return self.write_dr_periods_to_file(tmp_file)

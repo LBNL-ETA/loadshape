@@ -1,7 +1,7 @@
 import json
 import datetime
 from os import path
-from loadshape import Loadshape, utils
+from loadshape import Loadshape, Tariff, utils
 
 # ----- config constants ----- #
 BUILDING_NAME = "My Building"
@@ -27,7 +27,6 @@ def write_json(data, file_name='output.json'):
 
 # ----- build loadshape object ----- #
 my_load_shape = Loadshape(load_data=LOAD_DATA, temp_data=TEMP_DATA,
-                          # tariff_schedule=tariff_schedule
                           timezone='America/Los_Angeles',
                           temp_units="F", sq_ft=BUILDING_SQ_FT)
 
@@ -35,6 +34,13 @@ my_load_shape = Loadshape(load_data=LOAD_DATA, temp_data=TEMP_DATA,
 my_load_shape.add_exclusion("2013-09-23 00:00:00", "2013-09-24 00:00:00")
 my_load_shape.add_exclusion("2013-09-27 00:00:00", "2013-09-28 00:00:00")
 my_load_shape.add_named_exclusion("US_HOLIDAYS")
+
+# ----- add tariff to enable cost calculations ----- #
+tariff = Tariff(tariff_file=TARIFF, timezone='America/Los_Angeles')
+tariff.add_dr_period("2013-09-23 14:00:00", "2013-09-23 16:00:00")
+tariff.add_dr_period("2013-09-27 14:00:00", "2013-09-27 16:15:00")
+
+my_load_shape.set_tariff(tariff)
 
 # ----- build the baseline to use as a reference for performance ----- #
 event_baseline = my_load_shape.baseline(weighting_days=14,

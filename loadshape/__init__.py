@@ -14,4 +14,9 @@ __author__  = 'Dave Riess'
 __contact__ = 'driess@lbl.gov'
 __license__ = 'MIT'
 
-from .loadshape import *
+# from .loadshape import *
+
+import utils
+from loadshape import Loadshape
+from series import Series
+from tariff import Tariff
