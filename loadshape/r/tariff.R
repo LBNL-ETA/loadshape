@@ -76,7 +76,6 @@ AggregateLoad = function(timestamp,load, outIntervalMinutes=15,
 	time0 = time[1] - loadMeasurementIntervalSec	
 	timeEnergyNum = c(as.numeric(time0),timeNum)
 	
-	
 	# Find the first output interval for which the load is completely known
 	# Choose possible interval end times by starting the possibilities on an hour.
 	# (We expect outIntervalMinutes to divide into 60, although we don't require it)
@@ -147,7 +146,7 @@ AggregateLoad = function(timestamp,load, outIntervalMinutes=15,
 
 
 getTariffInfo = function(tariffFile,verbose=1) {
-	aScan = scan(tariffFile,sep="\n",what="character")
+	aScan = scan(tariffFile,sep="\n",what="character",quiet=T)
 	
 	nLines = length(aScan)
 	
@@ -169,7 +168,7 @@ getTariffInfo = function(tariffFile,verbose=1) {
 				if (verbose > 4) { print(aLine) }
 				tariffLine = unlist(strsplit(aLine,","))
 				if (length(tariffLine) != 3) {
-					stop("A line with a comma in it does not have three fields.")
+					stop("A tariff file line with a comma in it does not have three fields.")
 				}
 				tariffDat = rbind(tariffDat,as.numeric(tariffLine))
 			}
@@ -260,7 +259,7 @@ calcCost = function(loadFile,tariffFile,DRdayFile = NULL, verbose=1) {
 	 
 	loadVec = aggLoad$loadInterp
 	
-	loadMonth = tLoad$mon	
+	loadMonth = tLoad$mon+1 # Add 1 because $mon ranges from 0 to 11	
 	loadDay = tLoad$wday
 	loadHour = tLoad$hour
 	loadDate = as.Date(tLoad)
@@ -272,14 +271,22 @@ calcCost = function(loadFile,tariffFile,DRdayFile = NULL, verbose=1) {
 		DRlist = read.table(DRdayFile,sep=",",as.is=T,header=F)
 		tDRstart = getTime(DRlist[,1])
 		tDRend = getTime(DRlist[,2])
-		DRdate = as.Date(tDRstart)
+		tDRstartNum = as.numeric(tDRstart)
+		tDRendNum = as.numeric(tDRend)
+		for (iDR in 1:length(tDRstart)) {
+			okDR = tDRstart[iDR] < aggLoad$timeNum & 
+					aggLoad$timeNum <= tDRendNum[iDR]
+			loadDayType[okDR] = 3
+		}
 		
-		loadDayType[loadDate %in% DRdate] = 3 # DR days	
 	}
 	
 	tariffIDMatch = match(interaction(loadDayType,loadMonth,loadHour),
 		interaction(tariffScheduleUnpacked$dayType,tariffScheduleUnpacked$month,
 			tariffScheduleUnpacked$hour))
+	if (any(is.na(tariffIDMatch))) {
+		stop("Error in Tariff calculation: a (daytype, month, hour) combination does not have a tariff")
+	}		
 
 	tariffID = tariffScheduleUnpacked$Tariff[tariffIDMatch]
 	
