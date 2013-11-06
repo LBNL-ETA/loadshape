@@ -236,10 +236,10 @@ class Loadshape(object):
 
         # extract data from diff series
         ep = {}
-        ep["avg_kw_shed"]           = kw_diff_series.values()[-1]
+        ep["avg_kw_shed"]           = kw_diff_series.values()[-1] * -1
         avg_kw_base                 = kw_base_series.values()[-1]
         ep["avg_percent_kw_shed"]   = (ep["avg_kw_shed"] / avg_kw_base) * 100
-        ep["kwh_reduction"]         = cumulative_kwh_diff_series.values()[-1]
+        ep["kwh_reduction"]         = cumulative_kwh_diff_series.values()[-1] * -1
         kwh_base                    = cumulative_kwh_base_series.values()[-1]
         ep["percent_kwh_reduction"] = (ep["kwh_reduction"] / kwh_base) * 100
 
