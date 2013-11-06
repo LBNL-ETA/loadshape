@@ -60,8 +60,8 @@ out["event_start_at"]         = DR_EVENT_START
 out["event_end_at"]           = DR_EVENT_END
 out["dr_event_stats"]         = event_performance
 out["dr_event_day_stats"]     = event_day_performance
-out["power_data"]["actual"]   = my_load_shape.actual_data(DR_EVENT_DAY_START, DR_EVENT_DAY_END)
-out["power_data"]["baseline"] = my_load_shape.baseline_data(DR_EVENT_DAY_START, DR_EVENT_DAY_END)
+out["power_data"]["actual"]   = my_load_shape.actual_data(DR_EVENT_DAY_START, DR_EVENT_DAY_END, step_size=900)
+out["power_data"]["baseline"] = my_load_shape.baseline_data(DR_EVENT_DAY_START, DR_EVENT_DAY_END, step_size=900)
 
 # ----- write output to file ----- #
 file_name = path.join(EXAMPLES_DIR, "output", "dr-event-example.json")

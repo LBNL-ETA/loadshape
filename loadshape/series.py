@@ -70,6 +70,7 @@ class Series(object):
 
             interp_vals = numpy.interp(output_values, x_values, y_values)
             data = zip(output_values, interp_vals)
+            data = [(e[0], round(e[1], 2)) for e in data]
 
         # if start_at / end_at were specified, slice data
         if slice_data == True:
