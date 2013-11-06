@@ -11,6 +11,7 @@
 import csv
 import math
 import utils
+import numpy
 import tempfile
 
 import exclusions
@@ -65,6 +66,22 @@ class Series(object):
 
         return data
     
+    def interpolate(self, start_at=None, end_at=None, step_size=900, exclude=True):
+        data = self.data(exclude=exclude)
+
+        if (start_at != None) & (end_at != None):
+            start_at    = utils.read_timestamp(start_at, self.timezone)
+            end_at      = utils.read_timestamp(end_at, self.timezone)
+        else:
+            start_at    = data[0][0]
+            end_at      = data[-1][0]
+
+        output_values = numpy.arange(start_at, (end_at + 1), step_size)
+        x_values, y_values = zip(*data)
+
+        interp_vals = numpy.interp(output_values, x_values, y_values)
+        return zip(output_values, interp_vals)
+
     def values(self):
         return [e[1] for e in self.series]
     

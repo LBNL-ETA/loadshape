@@ -46,6 +46,15 @@ class TestSeries(unittest.TestCase):
         series.add_named_exclusion("US_HOLIDAYS")
         assert len(series.data()) < len(series.series)
 
+    def test_interpolate(self):
+        data = [(1379487600, 2.0), (1379488500, 4.0), (1379489400, 6.0), (1379490300, 8.0)]
+        expected = [(1379488050, 3.0), (1379488950, 5.0), (1379489850, 7.0)]
+
+        series = Series(data)
+        out = series.interpolate(1379488050, 1379489850, 900)
+
+        assert out == expected
+
 def main():
     unittest.main()
 
