@@ -44,19 +44,35 @@ class Series(object):
         self._sort_series()
     
     # --- accessors --- #
-    def data(self, start_at=None, end_at=None, exclude=True):
+    def data(self, start_at=None, end_at=None, step_size=None, exclude=True):
         """raw data accessors, returns a list of tuples
         - a section of the series can be returned by supplying start_at/end_at
         - if no start_at or end_at is supplied, the whole series, except for
         exclusion periods is returned
+        - if a step_size argument is present, data will be interpolated first
         """
         data = self.series
         
-        # if start_at / end_at are specified, slice data
+        # capture start_at / end_at
         if (start_at != None) & (end_at != None):
+            slice_data = True
             start_at = utils.read_timestamp(start_at, self.timezone)
             end_at = utils.read_timestamp(end_at, self.timezone)
-            
+        else:
+            slice_data = False
+            start_at    = data[0][0]
+            end_at      = data[-1][0]
+
+        # if step_size is specified, interpolate
+        if step_size != None:
+            output_values = numpy.arange(start_at, (end_at + 1), step_size)
+            x_values, y_values = zip(*data)
+
+            interp_vals = numpy.interp(output_values, x_values, y_values)
+            data = zip(output_values, interp_vals)
+
+        # if start_at / end_at were specified, slice data
+        if slice_data == True:
             data = self._slice(list(data), start_at, end_at)
 
         # add in exclusions
@@ -65,22 +81,6 @@ class Series(object):
                 data = self._exclude(list(data), exclusion)
 
         return data
-    
-    def interpolate(self, start_at=None, end_at=None, step_size=900, exclude=True):
-        data = self.data(exclude=exclude)
-
-        if (start_at != None) & (end_at != None):
-            start_at    = utils.read_timestamp(start_at, self.timezone)
-            end_at      = utils.read_timestamp(end_at, self.timezone)
-        else:
-            start_at    = data[0][0]
-            end_at      = data[-1][0]
-
-        output_values = numpy.arange(start_at, (end_at + 1), step_size)
-        x_values, y_values = zip(*data)
-
-        interp_vals = numpy.interp(output_values, x_values, y_values)
-        return zip(output_values, interp_vals)
 
     def values(self):
         return [e[1] for e in self.series]
@@ -144,7 +144,7 @@ class Series(object):
                       start_at=None, end_at=None, exclude=True):
         if file_obj == None: file_obj = open(file_name, 'w')
 
-        for time, value in self.data(start_at, end_at, exclude):
+        for time, value in self.data(start_at=start_at, end_at=end_at, exclude=exclude):
             time = utils.int_to_datetime(time, self.timezone).strftime("%Y-%m-%d %H:%M:%S")
             file_obj.write("%s,%s\n" % (time, value))
         

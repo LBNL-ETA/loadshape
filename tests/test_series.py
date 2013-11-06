@@ -51,7 +51,7 @@ class TestSeries(unittest.TestCase):
         expected = [(1379488050, 3.0), (1379488950, 5.0), (1379489850, 7.0)]
 
         series = Series(data)
-        out = series.interpolate(1379488050, 1379489850, 900)
+        out = series.data(start_at=1379488050, end_at=1379489850, step_size=900)
 
         assert out == expected
 
