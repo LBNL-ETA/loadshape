@@ -18,6 +18,35 @@ my_loadshape = Loadshape(load_data, timezone="America/Los_Angeles")
 my_baseline = my_loadshape.baseline()
 ```
 
+Installation
+----
+To install using pip:
+```sh
+pip install git+https://bitbucket.org/berkeleylab/eetd-loadshape.git@master
+```
+
+Dependencies
+----
+The loadshape module depends on R, and the 'optparse' R module
+
+Install R using homebrew on OSX:
+```sh
+brew install R
+```
+
+[Install R using apt on Ubuntu](http://cran.r-project.org/bin/linux/ubuntu/README):
+```sh
+sudo apt-get install r-base-core
+```
+
+Once you have R installed, open up an R console and install optparse:
+```sh
+R
+> install.packages("optparse")
+# ... follow the instructions
+
+```
+
 Wiki
 ----
 Please take a look a the [Wiki](https://bitbucket.org/berkeleylab/eetd-loadshape/wiki) for installation instructions and more detailed usage information.
