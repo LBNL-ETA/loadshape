@@ -18,15 +18,13 @@ my_loadshape = Loadshape(load_data, timezone="America/Los_Angeles")
 my_baseline = my_loadshape.baseline()
 ```
 
-Installation
-----
+##Installation
 To install using pip:
 ```sh
 pip install git+https://bitbucket.org/berkeleylab/eetd-loadshape.git@master
 ```
 
-Dependencies
-----
+###Dependencies
 The loadshape module depends on R, and the 'optparse' R module
 
 Install R using homebrew on OSX:
@@ -44,13 +42,75 @@ Once you have R installed, open up an R console and install optparse:
 R
 > install.packages("optparse")
 # ... follow the instructions
-
 ```
 
-Wiki
-----
-Please take a look a the [Wiki](https://bitbucket.org/berkeleylab/eetd-loadshape/wiki) for installation instructions and more detailed usage information.
+##Quick Start
+TODO: quickstart
 
-Contribution
+Table of Contents:
 ----
++ **Introduction**
++ **Installation**
+    + Dependencies
++ **Quick Start**
++ **Input Data:**
+    + Timestamps
+    + Timezones
+    + Power Data
++ **Calculations:**
+    + Baselines
+    + Measurement and Verification
+    + Economic Valuation
++ **Advanced Usage:**
+    + Exclusion Periods
+    + Outdoor Air Temperature
+    + Modeling Interval
+    + Weighting
+    + Goodness of Fit
+    + Tariffs
++ **Examples:**
+    + Ex 1: Seven Day Baseline
+    + Ex 2: Cumulative Sum
+    + Ex 3: DR Event Performance
++ **Contribution**
+
+##Input Data
+
+###Timestamps
+
+###Time Zones
+
+###Power Data
+
+##Calculations
+
+###Baselines
+
+###Measurement and Verification
+
+###Economic Valuation
+
+## Advanced usage
+
+###Exclusion Periods
+
+###Outdoor Air Temperature
+
+###Modeling Interval
+
+###Weighting
+
+###Goodness of Fit
+
+###Tariffs
+
+##Examples
+
+###Ex 1: Seven Day Baseline
+
+###Ex 2: Cumulative Sum
+
+###Ex 3: DR Event Performance
+
+##Contribution
 Contributions are welcome and encouraged. If you find a bug, please file it. If you would like to see a feature added, please request it. If you would like to contribute code, please fork and submit a pull request.
