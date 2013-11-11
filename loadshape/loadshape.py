@@ -208,8 +208,8 @@ class Loadshape(object):
         self._run_script(cmd)
 
         # ----- process results ----- #
-        kw_diff         = Series(output_diff_tmp.name, self.timezone, data_column=1)
-        kw_base         = Series(output_base_tmp.name, self.timezone, data_column=1)
+        kw_diff = Series(output_diff_tmp.name, self.timezone, data_column=1)
+        kw_base = Series(output_base_tmp.name, self.timezone, data_column=1)
 
         cumulative_kwh_diff = Series(output_diff_tmp.name, self.timezone, data_column=2)
         cumulative_kwh_base = Series(output_base_tmp.name, self.timezone, data_column=2)
