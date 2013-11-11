@@ -47,7 +47,7 @@ R
 
 Table of Contents:
 ----
-+ **Introduction**
++ [**Introduction**](markdown-header-introduction)
 + **Input Data:**
     + Timestamps
     + Timezones
