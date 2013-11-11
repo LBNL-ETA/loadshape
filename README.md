@@ -48,27 +48,18 @@ R
 Table of Contents:
 ----
 + [**Introduction**](#markdown-header-introduction)
-+ **Input Data:**
-    + Timestamps
-    + Timezones
-    + Power Data
-    + CSV Inputs
-+ **Calculations:**
-    + Baselines
-    + Measurement and Verification
-    + Economic Valuation
-+ **Advanced Usage:**
-    + Exclusion Periods
-    + Outdoor Air Temperature
-    + Modeling Interval
-    + Weighting
-    + Goodness of Fit
-    + Tariffs
-+ **Examples:**
-    + Ex 1: Seven Day Baseline
-    + Ex 2: Cumulative Sum
-    + Ex 3: DR Event Performance
-+ **Contribution**
++ [**Input Data:**](#markdown-header-input-data)
+    + [Timestamps](#markdown-header-timestamps)
+    + [Timezones](#markdown-header-timezones)
+    + [Power Data](#markdown-header-power-data)
+    + [CSV Inputs](#markdown-header-csv-inputs)
+    + [Outdoor Air Temperature Data](#markdown-header-outdoor-air-temperature-data)
++ [**Calculations:**](#markdown-header-calculations)
+    + [Baselines](#markdown-header-baselines)
+    + [Measurement and Verification](#markdown-header-measurement-and-verification)
+    + [Economic Valuation](#markdown-header-economic-valuation)
++ [**Future Development**](#markdown-header-future-development)
++ [**Contribution**](#markdown-header-contribution)
 
 ##Introduction
 The loadshape module provides a quick and easy way to generate baselines and calculated quantities that are relevant for comparing actual electric loads with predicted (baseline) electric loads. The statistical model that is used by this module to generate baselines is intended to be used for electric loads that are sensitive to outdoor air temperature and which tend to follow trends based on time-of-week.
@@ -103,7 +94,7 @@ valid_load_data = [ ("2013-08-01 00:00:00", 5.168), # string: "YYYY-MM-DD HH:MM:
                     ("1380264300000", 4.739) ]      # string: milliseconds since Unix epoch
 ```
 
-###Time Zones
+###Timezones
 It's important that you specify what timezones your timestamps refer to. If no timezone is specified, then the module will assume that you are using the timezone of your operating system, but this isn't necessarily a great assumption. Specify your timezone using the appropriate [timezone name](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) when you create a new instance of the Loadshape class.
 ```python
 my_loadshape = Loadshape(load_data, timezone="America/Los_Angeles")
