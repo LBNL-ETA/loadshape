@@ -58,6 +58,7 @@ Table of Contents:
     + [Baselines](#markdown-header-baselines)
     + [Measurement and Verification](#markdown-header-measurement-and-verification)
     + [Economic Valuation](#markdown-header-economic-valuation)
++ [**Tariffs**](#markdown-header-tariffs)
 + [**Future Development**](#markdown-header-future-development)
 + [**Contribution**](#markdown-header-contribution)
 
