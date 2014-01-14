@@ -37,7 +37,7 @@ __title__   = 'loadshape'
 __version__ = '0.1.0' # Keep synchronized with ../setup.py.
 __author__  = 'Dave Riess'
 __contact__ = 'driess@lbl.gov'
-__license__ = 'MIT'
+__license__ = 'revised BSD'
 
 # from .loadshape import *
 
