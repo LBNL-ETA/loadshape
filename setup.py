@@ -51,8 +51,7 @@ for package in RPACKAGES:
 setup(name='loadshape',
       packages=find_packages(exclude=['tests']),
       version='0.1.0', # Keep synchronized with loadshape/__init__.py.
-      author='Dave Riess',
-      author_email='driess@lbl.gov',
+      author='LBNL',
       url='https://bitbucket.org/berkeleylab/eetd-loadshape',
       license='revised BSD',
       description='A set of tools for analyzing electric load shapes.',
