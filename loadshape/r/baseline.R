@@ -101,7 +101,9 @@ getTime = function(timeInfo) {
 
 
 readInputFiles = function(inLoadFile,inTemperatureFile=NULL,
-	inPredTemperatureFile=NULL,verbose=1,intervalMinutes=15) {
+	inPredTemperatureFile=NULL,
+	timeStampFile=NULL,
+	verbose=1,intervalMinutes=15) {
 	if (verbose > 2) { print("starting readInputFiles()") }
 	if (verbose > 3) { 
 		print(inLoadFile)
@@ -109,7 +111,10 @@ readInputFiles = function(inLoadFile,inTemperatureFile=NULL,
 	loadDat = read.table(inLoadFile,as.is=T,sep=",",header=F)
 	loadTime = getTime(loadDat[,1])	
 	dataLoad = loadDat[,2]
-		
+	
+	if (is.null(timeStampFile)) {
+	   timeStampFile=inLoadFile
+	}	
 	# Read prediction times (required)
 	predTimeStamp = read.table(timeStampFile,as.is=T,sep=",",header=F)
 	predTime = getTime(predTimeStamp[,1])
@@ -619,7 +624,7 @@ main = function(inLoadFile=inLoadFile,
 	if (verbose > 1) { print("starting main()") }
 
 	aa = readInputFiles(inLoadFile=inLoadFile,inTemperatureFile=inTemperatureFile,
-		inPredTemperatureFile=inPredTemperatureFile,
+		inPredTemperatureFile=inPredTemperatureFile,timeStampFile=timeStampFile,
 		intervalMinutes=intervalMinutes, verbose=verbose)
 		
 	if (verbose > 2) { print(paste("doTemperatureModel=",aa$doTemperatureModel)) }
