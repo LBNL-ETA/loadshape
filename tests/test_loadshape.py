@@ -68,6 +68,7 @@ class TestLoadshape(unittest.TestCase):
         assert len(prediction.data()) > 0
     
     def test_diff(self):
+        from loadshape.utils import get_timezone
         l_data   = [(1379487600, 5.0), (1379488500, 5.0), (1379489400, 5.0), (1379490300, 5.0), (1379491200, 5.0)]
         b_data   = [(1379487600, 4.0), (1379488500, 4.0), (1379489400, 4.0), (1379490300, 4.0), (1379491200, 4.0)]
         
@@ -76,7 +77,7 @@ class TestLoadshape(unittest.TestCase):
         expected_cumulative_kwh_base    = [(1379487600, 0), (1379488500, 1.0), (1379489400, 2.0), (1379490300, 3.0), (1379491200, 4.0)]
 
         b = Loadshape(l_data, timezone='America/Los_Angeles', log_level=30)
-        b.baseline_series = Series(b_data)
+        b.baseline_series = Series(b_data, get_timezone('America/Los_Angeles'))
         
         kw_diff, kw_base, cumulative_kwh_diff, cumulative_kwh_base = b.diff()
 
