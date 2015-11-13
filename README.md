@@ -1,11 +1,11 @@
 #Loadshape
 *A Python module containing tools for analyzing electric load shapes*
 
+[![Build Status](https://travis-ci.org/Melrok/loadshape.svg?branch=bootstrap-vm-and-ci)](https://travis-ci.org/Melrok/loadshape)
 
 Generating baselines for electric loads can be tricky, this module makes it easy:
 
-```
-#!python
+```python
 from loadshape import Loadshape
 
 # electric load data - values are expected to be power (kW)
@@ -20,29 +20,72 @@ my_baseline = my_loadshape.baseline()
 ```
 
 ##Installation
+
+
 To install using pip:
+
 ```sh
 pip install git+https://bitbucket.org/berkeleylab/eetd-loadshape.git@master
 ```
 
-##Dependencies
-The loadshape module depends on R, and the 'optparse' R module
+Otherwise, if you intend to develop `loadshape`, you can install using a local directory (NOTE: reference to temporary branch `bootstrap-vm-and-ci`):
 
-Install R using homebrew on OSX:
+```sh
+git clone -b bootstrap-vm-and-ci https://github.com/Melrok/loadshape.git
+pip install -e loadshape/
+```
+
+##Dependencies
+The `loadshape` module has multiple external dependencies, including R.
+
+### Bootstrapping
+For targeting a Debian / Ubuntu environment, one can bootstrap via:
+
+```sh
+sudo ./bootstrap.sh
+```
+
+or, if your shell isn't `sh` or `bash`:
+
+```sh
+sudo sh bootstrap.sh
+```
+
+### Manual
+
+**OS X**: Install R using homebrew on OSX:
+
 ```sh
 brew install R
 ```
 
-[Install R using apt on Ubuntu](http://cran.r-project.org/bin/linux/ubuntu/README):
+**Ubuntu /Debian**: [Install R using apt on Ubuntu](http://cran.r-project.org/bin/linux/ubuntu/README):
+
 ```sh
 sudo apt-get install r-base-core
 ```
 
-Once you have R installed, open up an R console and install optparse:
+Once you have R installed, open an R console and install `optparse` and `getopt`:
+
 ```sh
 R
 > install.packages("optparse")
+> > install.packages("getopt")
 # ... follow the instructions
+```
+
+## Virtual Machine support
+
+Additionally, for working with a virtual machine, ensure that [Vagrant](https://www.vagrantup.com/downloads.html) and [virtualbox](https://www.virtualbox.org/wiki/Downloads) and then, after cloning the repository to your host machine:
+
+```sh
+vagrant up
+```
+
+Access the vm by:
+
+```sh
+vagrant ssh
 ```
 
 Table of Contents:
@@ -146,9 +189,9 @@ For example, the predicted load for a particular Tuesday at 12:15 would be the w
 If outside air temperature data is provided in addition to the electric load data, a more sophisticated statistical model is fit. The temperature adjusted model assumes that the load data is that of a building with HVAC loads, and attempts to determine what times of the week the building is providing heating or cooling. When heating or cooling are being provided, the building is said to be in "occupied mode." Occupied and unoccupied mode are modeled separately. In each case, the load is predicted to be the sum of a time-of-week effect and a temperature-dependent effect. The temperature dependence is piecewise-linear; within each of several temperature ranges the load is assumed to increase or decrease linearly with temperature.
 
 The model is described in these publications:
-    
+
 + Mathieu et al., [Quantifying Changes in Building Electric Load, With Application to Demand Response.](http://drrc.lbl.gov/publications/quantifying-changes-building-electricity-use-application-demand-response) IEEE Transactions on Smart Grid 2:507-518, 2011  
-+ Price P, [Methods for Analyzing Electric Load Shape and its Variability.](http://drrc.lbl.gov/publications/methods-analyzing-electric-load-shape-and-its-variability) Lawrence Berkeley National Laboratory Report LBNL-3713E, May 2010. 
++ Price P, [Methods for Analyzing Electric Load Shape and its Variability.](http://drrc.lbl.gov/publications/methods-analyzing-electric-load-shape-and-its-variability) Lawrence Berkeley National Laboratory Report LBNL-3713E, May 2010.
 
 ####Generating Baselines
 
@@ -302,7 +345,7 @@ tariff.add_dr_period("2013-09-27 14:00:00", "2013-09-27 16:15:00")
 
 my_load_shape.set_tariff(tariff)
 ```
-Note that specifying dr periods, as shown above, is optional. Adding these dr periods will ensure that the dr day tariff that is specified in the tariff JSON is used during the periods specified. Also, note that if a Loadshape object has a tariff set, the event_performance method will use the cost method that is described below to calculate the financial savings during the event period. 
+Note that specifying dr periods, as shown above, is optional. Adding these dr periods will ensure that the dr day tariff that is specified in the tariff JSON is used during the periods specified. Also, note that if a Loadshape object has a tariff set, the event_performance method will use the cost method that is described below to calculate the financial savings during the event period.
 
 After a tariff has been set for a loadshape object, as shown above, the cost method may be used to calculate the cost of energy and the cumulative cost of energy at each interval of the data provied to the load_data argument. If no load_data argument is provided, the input data will default to the actual load data. The example below shows how the cost data for a baseline load shape can be calculated.
 ```python

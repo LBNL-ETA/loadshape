@@ -1,2 +1,57 @@
 .DS_Store
 examples/output/*.json
+
+# Hidden Directories
+.Rhistory
+.idea/
+.vagrant/
+*.ipynb_checkpoints
+
+
+*.c
+*.h5
+*flymake*
+*.py[cod]
+# C extensions
+*.so
+
+# Temp files
+*~
+*\#*\#
+
+# Static doc build
+doc/source/generated
+doc/source/_static
+doc/build/html/index.html
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
